@@ -326,6 +326,60 @@ In order to adjust vertical position pass `verticalOffset` to the `CopilotProvid
 <CopilotProvider verticalOffset={36}>
 ```
 
+### Custom beforeStepChange callback
+
+You can execute custom logic before each step change by providing a `beforeStepChange` callback. This function runs before any measurement, scrolling, or animation occurs.
+
+**Option 1: Pass to CopilotProvider**
+
+```js
+const handleBeforeStepChange = async (step) => {
+  console.log("About to change to step:", step?.name);
+
+  // Custom preparation logic
+  if (step?.name === "scroll-step") {
+    // Handle custom scrolling or layout changes
+    await prepareForScrollStep();
+  }
+};
+
+<CopilotProvider beforeStepChange={handleBeforeStepChange}>
+  <App />
+</CopilotProvider>;
+```
+
+**Option 2: Pass to start() function**
+
+```js
+const MyComponent = () => {
+  const { start } = useCopilot();
+  const scrollViewRef = useRef(null);
+
+  const handleBeforeStepChange = async (step) => {
+    if (step?.name === "special-step") {
+      // Custom scroll handling
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    }
+  };
+
+  const startTutorial = () => {
+    start(
+      undefined, // fromStep
+      scrollViewRef.current, // scrollView ref
+      handleBeforeStepChange, // beforeStepChange callback
+    );
+  };
+
+  return (
+    <ScrollView ref={scrollViewRef}>
+      <Button onPress={startTutorial} title="Start Tutorial" />
+    </ScrollView>
+  );
+};
+```
+
+The callback provided to `start()` will override the one provided to `CopilotProvider` for that specific tutorial session.
+
 ### Triggering the tutorial
 
 Use `const {start} = useCopilot()` to trigger the tutorial. You can either invoke it with a touch event or in `useEffect` to start after the comopnent mounts. Note that the component and all its descendants must be mounted before starting the tutorial since the `CopilotStep`s need to be registered first.
@@ -334,6 +388,9 @@ Use `const {start} = useCopilot()` to trigger the tutorial. You can either invok
 
 Pass the ScrollView reference as the second argument to the `start()` function.
 eg `start(undefined, scrollViewRef)`
+
+You can also pass a `beforeStepChange` callback as the third argument:
+eg `start(undefined, scrollViewRef, beforeStepChangeCallback)`
 
 ```js
 import { ScrollView } from "react-native";
