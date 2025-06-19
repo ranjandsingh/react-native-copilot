@@ -1,21 +1,21 @@
-<h1 align="center">React Native Copilot</h1>
+<h1 align="center">RN Tour Copilot</h1>
 
 <div align="center">
   <p align="center">
-    <a href="https://github.com/mohebifar/react-native-copilot/actions/workflows/release.yml">
-      <img src="https://img.shields.io/github/actions/workflow/status/mohebifar/react-native-copilot/release.yml?branch=master&style=flat-square" alt="Build Status" />
+    <a href="https://github.com/ranjandsingh/react-native-copilot/actions/workflows/release.yml">
+      <img src="https://img.shields.io/github/actions/workflow/status/ranjandsingh/react-native-copilot/release.yml?branch=master&style=flat-square" alt="Build Status" />
     </a>
-    <a href="https://www.npmjs.com/package/react-native-copilot">
-      <img src="https://img.shields.io/npm/v/react-native-copilot.svg?style=flat-square" alt="NPM Version" />
+    <a href="https://www.npmjs.com/package/rn-tour-copilot">
+      <img src="https://img.shields.io/npm/v/rn-tour-copilot.svg?style=flat-square" alt="NPM Version" />
     </a>
-    <a href="https://www.npmjs.com/package/react-native-copilot">
-      <img src="https://img.shields.io/npm/dm/react-native-copilot.svg?style=flat-square" alt="NPM Downloads" />
+    <a href="https://www.npmjs.com/package/rn-tour-copilot">
+      <img src="https://img.shields.io/npm/dm/rn-tour-copilot.svg?style=flat-square" alt="NPM Downloads" />
     </a>
   </p>
 </div>
 
 <p align="center">
-  Step-by-step walkthrough for your react native app!
+  Step-by-step walkthrough for your react native app with enhanced features!
 </p>
 
 <p align="center">
@@ -31,11 +31,11 @@
 ## Installation
 
 ```
-yarn add react-native-copilot
+yarn add rn-tour-copilot
 
 # or with npm:
 
-npm install --save react-native-copilot
+npm install --save rn-tour-copilot
 ```
 
 **Optional**: If you want to have the smooth SVG animation, you should install and link [`react-native-svg`](https://github.com/software-mansion/react-native-svg).
@@ -45,7 +45,7 @@ npm install --save react-native-copilot
 Wrap the portion of your app that you want to use copilot with inside `<CopilotProvider>`:
 
 ```js
-import { CopilotProvider } from "react-native-copilot";
+import { CopilotProvider } from "rn-tour-copilot";
 
 const AppWithCopilot = () => {
   return (
@@ -61,11 +61,7 @@ const AppWithCopilot = () => {
 Before defining walkthrough steps for your react elements, you must make them `walkthroughable`. The easiest way to do that for built-in react native components, is using the `walkthroughable` HOC. Then you must wrap the element with `CopilotStep`.
 
 ```jsx
-import {
-  CopilotProvider,
-  CopilotStep,
-  walkthroughable,
-} from "react-native-copilot";
+import { CopilotProvider, CopilotStep, walkthroughable } from "rn-tour-copilot";
 
 const CopilotText = walkthroughable(Text);
 
@@ -100,7 +96,7 @@ const HomeScreen = () => {
 };
 ```
 
-If you are looking for a working example, please check out [this link](https://github.com/mohebifar/react-native-copilot/blob/master/example/App.jsx).
+If you are looking for a working example, please check out [this link](https://github.com/ranjandsingh/react-native-copilot/blob/master/example/App.jsx).
 
 ### Overlays and animation
 
@@ -138,7 +134,7 @@ By default, if overlay is not explicitly specified, the `svg` overlay will be us
 
 ### Custom tooltip and step number UI components
 
-You can customize the tooltip and the step number components by passing a component to the `CopilotProvider` component. If you are looking for an example tooltip component, take a look at [the default ui implementations](https://github.com/mohebifar/react-native-copilot/blob/master/src/components/default-ui).
+You can customize the tooltip and the step number components by passing a component to the `CopilotProvider` component. If you are looking for an example tooltip component, take a look at [the default ui implementations](https://github.com/ranjandsingh/react-native-copilot/blob/master/src/components/default-ui).
 
 ```js
 const TooltipComponent = () => {
@@ -420,12 +416,12 @@ List of available events is:
 
 - `start` — Copilot tutorial has started.
 - `stop` — Copilot tutorial has ended or skipped.
-- `stepChange` — Next step is triggered. Passes [`Step`](https://github.com/mohebifar/react-native-copilot/blob/master/src/types.js#L2) instance as event handler argument.
+- `stepChange` — Next step is triggered. Passes [`Step`](https://github.com/ranjandsingh/react-native-copilot/blob/master/src/types.ts#L10) instance as event handler argument.
 
 **Example:**
 
 ```js
-import { useCopilot } from "react-native-copilot";
+import { useCopilot } from "rn-tour-copilot";
 
 const HomeScreen = () => {
   const { copilotEvents } = useCopilot();
