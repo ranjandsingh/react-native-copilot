@@ -19,7 +19,14 @@ import {
 const WalkthroughableText = walkthroughable(Text);
 const WalkthroughableImage = walkthroughable(Image);
 
-function App() {
+function App({
+  showSkip,
+  setShowSkip,
+  showPrevious,
+  setShowPrevious,
+  stepNumberFormat,
+  setStepNumberFormat,
+}) {
   const { start, copilotEvents } = useCopilot();
   const [secondStepActive, setSecondStepActive] = useState(true);
   const [lastEvent, setLastEvent] = useState(null);
@@ -72,6 +79,32 @@ function App() {
           />
         </View>
 
+        <View style={styles.activeSwitchContainer}>
+          <Text>Show Skip Button?</Text>
+          <View style={{ flexGrow: 1 }} />
+          <Switch onValueChange={setShowSkip} value={showSkip} />
+        </View>
+
+        <View style={styles.activeSwitchContainer}>
+          <Text>Show Previous Button?</Text>
+          <View style={{ flexGrow: 1 }} />
+          <Switch onValueChange={setShowPrevious} value={showPrevious} />
+        </View>
+
+        <View style={styles.activeSwitchContainer}>
+          <Text>
+            Step Number Format:{" "}
+            {stepNumberFormat === "current" ? "Current Only" : "Current/Total"}
+          </Text>
+          <View style={{ flexGrow: 1 }} />
+          <Switch
+            onValueChange={(value) =>
+              setStepNumberFormat(value ? "current_of_total" : "current")
+            }
+            value={stepNumberFormat === "current_of_total"}
+          />
+        </View>
+
         <TouchableOpacity style={styles.button} onPress={() => start()}>
           <Text style={styles.buttonText}>START THE TUTORIAL!</Text>
         </TouchableOpacity>
@@ -119,11 +152,30 @@ function App() {
   );
 }
 
-const AppwithProvider = () => (
-  <CopilotProvider stopOnOutsideClick androidStatusBarVisible>
-    <App />
-  </CopilotProvider>
-);
+const AppwithProvider = () => {
+  const [showSkip, setShowSkip] = useState(true);
+  const [showPrevious, setShowPrevious] = useState(true);
+  const [stepNumberFormat, setStepNumberFormat] = useState("current_of_total");
+
+  return (
+    <CopilotProvider
+      stopOnOutsideClick
+      androidStatusBarVisible
+      showSkipButton={showSkip}
+      showPreviousButton={showPrevious}
+      showStepNumbers={stepNumberFormat}
+    >
+      <App
+        showSkip={showSkip}
+        setShowSkip={setShowSkip}
+        showPrevious={showPrevious}
+        setShowPrevious={setShowPrevious}
+        stepNumberFormat={stepNumberFormat}
+        setStepNumberFormat={setStepNumberFormat}
+      />
+    </CopilotProvider>
+  );
+};
 
 export default AppwithProvider;
 

@@ -34,9 +34,9 @@ export const styles = StyleSheet.create({
   },
   stepNumberContainer: {
     position: "absolute",
-    width: STEP_NUMBER_DIAMETER,
+    minWidth: STEP_NUMBER_DIAMETER,
     height: STEP_NUMBER_DIAMETER,
-    overflow: "hidden",
+    overflow: "visible",
     zIndex: ZINDEX + 1,
   },
   stepNumber: {
@@ -47,11 +47,15 @@ export const styles = StyleSheet.create({
     borderRadius: STEP_NUMBER_RADIUS,
     borderColor: "#FFFFFF",
     backgroundColor: "#27ae60",
+    minWidth: STEP_NUMBER_DIAMETER,
+    paddingHorizontal: 2,
   },
   stepNumberText: {
-    fontSize: 10,
+    fontSize: 9,
     backgroundColor: "transparent",
     color: "#FFFFFF",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   button: {
     padding: 10,

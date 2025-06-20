@@ -132,6 +132,29 @@ You can specify the overlay by passing the `overlay` prop to the `<CopilotProvid
 
 By default, if overlay is not explicitly specified, the `svg` overlay will be used if `react-native-svg` is installed, otherwise the `view` overlay will be used.
 
+### Step number display
+
+By default, the step number component shows the current step number out of the total number of steps (e.g., "2/5"). This gives users a clear indication of their progress through the tour.
+
+You can customize the step number format by passing the `showStepNumbers` prop to the `CopilotProvider`:
+
+```js
+// Show current step out of total (default)
+<CopilotProvider showStepNumbers="current_of_total">
+  <App />
+</CopilotProvider>
+
+// Show only current step number
+<CopilotProvider showStepNumbers="current">
+  <App />
+</CopilotProvider>
+```
+
+Available options:
+
+- `"current_of_total"` (default): Shows "1/5", "2/5", etc.
+- `"current"`: Shows "1", "2", etc.
+
 ### Custom tooltip and step number UI components
 
 You can customize the tooltip and the step number components by passing a component to the `CopilotProvider` component. If you are looking for an example tooltip component, take a look at [the default ui implementations](https://github.com/ranjandsingh/react-native-copilot/blob/master/src/components/default-ui).
@@ -313,6 +336,22 @@ You can localize labels:
   }}
 >
 ```
+
+### Hide Skip and Previous buttons
+
+You can hide the skip button and/or previous button by passing `showSkipButton` and `showPreviousButton` props to the `CopilotProvider` component:
+
+```js
+<CopilotProvider showSkipButton={false} showPreviousButton={false}>
+  <App />
+</CopilotProvider>
+```
+
+By default, both buttons are shown (`showSkipButton={true}`, `showPreviousButton={true}`).
+
+- The skip button appears on all steps except the last step
+- The previous button appears on all steps except the first step
+- When disabled, these buttons will not render at all
 
 ### Adjust vertical position
 

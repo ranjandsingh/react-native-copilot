@@ -70,6 +70,9 @@ export const CopilotModal = forwardRef<CopilotModalHandle, Props>(
       arrowColor = "#fff",
       arrowSize = ARROW_SIZE,
       margin = MARGIN,
+      showSkipButton = true,
+      showPreviousButton = true,
+      showStepNumbers = "current_of_total",
     },
     ref,
   ) {
@@ -352,7 +355,7 @@ export const CopilotModal = forwardRef<CopilotModalHandle, Props>(
               },
             ]}
           >
-            <StepNumberComponent />
+            <StepNumberComponent showStepNumbers={showStepNumbers} />
           </Animated.View>
           {!!arrowSize && (
             <Animated.View key="arrow" style={[styles.arrow, arrowStyles]} />
@@ -361,7 +364,11 @@ export const CopilotModal = forwardRef<CopilotModalHandle, Props>(
             key="tooltip"
             style={[styles.tooltip, tooltipStyles, tooltipStyle]}
           >
-            <TooltipComponent labels={labels} />
+            <TooltipComponent
+              labels={labels}
+              showSkipButton={showSkipButton}
+              showPreviousButton={showPreviousButton}
+            />
           </Animated.View>
         </>
       );

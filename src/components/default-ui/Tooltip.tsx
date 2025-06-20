@@ -8,7 +8,11 @@ import { styles } from "../style";
 import type { TooltipProps } from "../../types";
 import { useCopilot } from "../../contexts/CopilotProvider";
 
-export const Tooltip = ({ labels }: TooltipProps) => {
+export const Tooltip = ({
+  labels,
+  showSkipButton = true,
+  showPreviousButton = true,
+}: TooltipProps) => {
   const { goToNext, goToPrev, stop, currentStep, isFirstStep, isLastStep } =
     useCopilot();
 
@@ -31,12 +35,12 @@ export const Tooltip = ({ labels }: TooltipProps) => {
         </Text>
       </View>
       <View style={[styles.bottomBar]}>
-        {!isLastStep ? (
+        {!isLastStep && showSkipButton ? (
           <TouchableOpacity onPress={handleStop}>
             <Button>{labels.skip}</Button>
           </TouchableOpacity>
         ) : null}
-        {!isFirstStep ? (
+        {!isFirstStep && showPreviousButton ? (
           <TouchableOpacity onPress={handlePrev}>
             <Button>{labels.previous}</Button>
           </TouchableOpacity>
