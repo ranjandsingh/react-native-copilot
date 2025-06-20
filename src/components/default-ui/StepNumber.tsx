@@ -4,12 +4,23 @@ import { useCopilot } from "../../contexts/CopilotProvider";
 
 import { styles } from "../style";
 
-export const StepNumber: FunctionComponent<unknown> = () => {
-  const { currentStepNumber } = useCopilot();
+export interface StepNumberProps {
+  showStepNumbers?: "current" | "current_of_total";
+}
+
+export const StepNumber: FunctionComponent<StepNumberProps> = ({
+  showStepNumbers = "current_of_total",
+}) => {
+  const { currentStepNumber, totalStepsNumber } = useCopilot();
+
+  const displayText =
+    showStepNumbers === "current"
+      ? currentStepNumber.toString()
+      : `${currentStepNumber}/${totalStepsNumber}`;
 
   return (
     <View style={styles.stepNumber}>
-      <Text style={styles.stepNumberText}>{currentStepNumber}</Text>
+      <Text style={styles.stepNumberText}>{displayText}</Text>
     </View>
   );
 };

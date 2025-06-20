@@ -44,6 +44,8 @@ export type Labels = Partial<
 
 export interface TooltipProps {
   labels: Labels;
+  showSkipButton?: boolean;
+  showPreviousButton?: boolean;
 }
 
 export interface MaskProps {
@@ -81,4 +83,7 @@ export interface CopilotOptions {
   stopOnOutsideClick?: boolean;
   backdropColor?: string;
   beforeStepChange?: (step: Step | undefined) => void | Promise<void>;
+  showSkipButton?: boolean;
+  showPreviousButton?: boolean;
+  showStepNumbers?: "current" | "current_of_total";
 }
