@@ -1,10 +1,9 @@
 import React from "react";
 import { render, screen } from "@testing-library/react-native";
 import { Tooltip } from "../default-ui/Tooltip";
-import { CopilotProvider } from "../../contexts/CopilotProvider";
 
 // Mock the CopilotProvider context
-const mockCopilotContext = {
+const createMockContext = (overrides = {}) => ({
   goToNext: jest.fn(),
   goToPrev: jest.fn(),
   stop: jest.fn(),
@@ -19,10 +18,15 @@ const mockCopilotContext = {
   currentStepNumber: 1,
   totalStepsNumber: 3,
   goToNth: jest.fn(),
-};
+  showSkipButton: true,
+  showPreviousButton: true,
+  ...overrides,
+});
+
+const mockUseCopilot = jest.fn();
 
 jest.mock("../../contexts/CopilotProvider", () => ({
-  useCopilot: () => mockCopilotContext,
+  useCopilot: () => mockUseCopilot(),
 }));
 
 describe("Tooltip", () => {
@@ -35,16 +39,19 @@ describe("Tooltip", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockUseCopilot.mockReturnValue(createMockContext());
   });
 
   it("renders skip button when showSkipButton is true and not last step", () => {
-    render(
-      <Tooltip
-        labels={defaultLabels}
-        showSkipButton={true}
-        showPreviousButton={true}
-      />,
+    mockUseCopilot.mockReturnValue(
+      createMockContext({
+        showSkipButton: true,
+        showPreviousButton: true,
+        isLastStep: false,
+      }),
     );
+
+    render(<Tooltip labels={defaultLabels} />);
 
     expect(screen.getByText("Skip")).toBeTruthy();
     expect(screen.getByText("Previous")).toBeTruthy();
@@ -52,13 +59,14 @@ describe("Tooltip", () => {
   });
 
   it("does not render skip button when showSkipButton is false", () => {
-    render(
-      <Tooltip
-        labels={defaultLabels}
-        showSkipButton={false}
-        showPreviousButton={true}
-      />,
+    mockUseCopilot.mockReturnValue(
+      createMockContext({
+        showSkipButton: false,
+        showPreviousButton: true,
+      }),
     );
+
+    render(<Tooltip labels={defaultLabels} />);
 
     expect(screen.queryByText("Skip")).toBeNull();
     expect(screen.getByText("Previous")).toBeTruthy();
@@ -66,13 +74,14 @@ describe("Tooltip", () => {
   });
 
   it("does not render previous button when showPreviousButton is false", () => {
-    render(
-      <Tooltip
-        labels={defaultLabels}
-        showSkipButton={true}
-        showPreviousButton={false}
-      />,
+    mockUseCopilot.mockReturnValue(
+      createMockContext({
+        showSkipButton: true,
+        showPreviousButton: false,
+      }),
     );
+
+    render(<Tooltip labels={defaultLabels} />);
 
     expect(screen.getByText("Skip")).toBeTruthy();
     expect(screen.queryByText("Previous")).toBeNull();
@@ -80,13 +89,14 @@ describe("Tooltip", () => {
   });
 
   it("does not render both skip and previous buttons when both are disabled", () => {
-    render(
-      <Tooltip
-        labels={defaultLabels}
-        showSkipButton={false}
-        showPreviousButton={false}
-      />,
+    mockUseCopilot.mockReturnValue(
+      createMockContext({
+        showSkipButton: false,
+        showPreviousButton: false,
+      }),
     );
+
+    render(<Tooltip labels={defaultLabels} />);
 
     expect(screen.queryByText("Skip")).toBeNull();
     expect(screen.queryByText("Previous")).toBeNull();
@@ -94,23 +104,15 @@ describe("Tooltip", () => {
   });
 
   it("renders finish button on last step", () => {
-    // Mock isLastStep to be true
-    const mockLastStepContext = {
-      ...mockCopilotContext,
-      isLastStep: true,
-    };
-
-    jest.doMock("../../contexts/CopilotProvider", () => ({
-      useCopilot: () => mockLastStepContext,
-    }));
-
-    render(
-      <Tooltip
-        labels={defaultLabels}
-        showSkipButton={true}
-        showPreviousButton={true}
-      />,
+    mockUseCopilot.mockReturnValue(
+      createMockContext({
+        isLastStep: true,
+        showSkipButton: true,
+        showPreviousButton: true,
+      }),
     );
+
+    render(<Tooltip labels={defaultLabels} />);
 
     expect(screen.queryByText("Skip")).toBeNull(); // Skip button should not render on last step
     expect(screen.getByText("Previous")).toBeTruthy();
@@ -119,35 +121,60 @@ describe("Tooltip", () => {
   });
 
   it("does not render previous button on first step", () => {
-    // Mock isFirstStep to be true
-    const mockFirstStepContext = {
-      ...mockCopilotContext,
-      isFirstStep: true,
-    };
-
-    jest.doMock("../../contexts/CopilotProvider", () => ({
-      useCopilot: () => mockFirstStepContext,
-    }));
-
-    render(
-      <Tooltip
-        labels={defaultLabels}
-        showSkipButton={true}
-        showPreviousButton={true}
-      />,
+    mockUseCopilot.mockReturnValue(
+      createMockContext({
+        isFirstStep: true,
+        showSkipButton: true,
+        showPreviousButton: true,
+      }),
     );
+
+    render(<Tooltip labels={defaultLabels} />);
 
     expect(screen.getByText("Skip")).toBeTruthy();
     expect(screen.queryByText("Previous")).toBeNull(); // Previous button should not render on first step
     expect(screen.getByText("Next")).toBeTruthy();
   });
 
-  it("uses default values when props are not provided", () => {
+  it("respects context values for button visibility", () => {
+    mockUseCopilot.mockReturnValue(
+      createMockContext({
+        showSkipButton: true,
+        showPreviousButton: true,
+      }),
+    );
+
     render(<Tooltip labels={defaultLabels} />);
 
-    // Should render both buttons by default (showSkipButton=true, showPreviousButton=true)
+    // Should render both buttons based on context values
     expect(screen.getByText("Skip")).toBeTruthy();
     expect(screen.getByText("Previous")).toBeTruthy();
     expect(screen.getByText("Next")).toBeTruthy();
+  });
+
+  it("does not render previous button on first step even when showPreviousButton is true", () => {
+    mockUseCopilot.mockReturnValue(
+      createMockContext({
+        isFirstStep: true,
+        showPreviousButton: true, // Context says show, but first step logic overrides
+      }),
+    );
+
+    render(<Tooltip labels={defaultLabels} />);
+
+    expect(screen.queryByText("Previous")).toBeNull();
+  });
+
+  it("does not render skip button on last step even when showSkipButton is true", () => {
+    mockUseCopilot.mockReturnValue(
+      createMockContext({
+        isLastStep: true,
+        showSkipButton: true, // Context says show, but last step logic overrides
+      }),
+    );
+
+    render(<Tooltip labels={defaultLabels} />);
+
+    expect(screen.queryByText("Skip")).toBeNull();
   });
 });

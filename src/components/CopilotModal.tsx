@@ -70,8 +70,6 @@ export const CopilotModal = forwardRef<CopilotModalHandle, Props>(
       arrowColor = "#fff",
       arrowSize = ARROW_SIZE,
       margin = MARGIN,
-      showSkipButton = true,
-      showPreviousButton = true,
       showStepNumbers = "current_of_total",
     },
     ref,
@@ -293,18 +291,20 @@ export const CopilotModal = forwardRef<CopilotModalHandle, Props>(
     }
 
     return (
-      <Modal
-        animationType="none"
-        visible
-        onRequestClose={noop}
-        transparent
-        supportedOrientations={["portrait", "landscape"]}
-      >
-        <View style={styles.container} onLayout={handleLayoutChange}>
-          {contentVisible && renderMask()}
-          {contentVisible && renderTooltip()}
-        </View>
-      </Modal>
+      <View>
+        <Modal
+          animationType="none"
+          visible
+          onRequestClose={noop}
+          transparent
+          supportedOrientations={["portrait", "landscape"]}
+        >
+          <View style={styles.container} onLayout={handleLayoutChange}>
+            {contentVisible && renderMask()}
+            {contentVisible && renderTooltip()}
+          </View>
+        </Modal>
+      </View>
     );
 
     function renderMask() {
@@ -344,7 +344,7 @@ export const CopilotModal = forwardRef<CopilotModalHandle, Props>(
         return null;
       }
       return (
-        <>
+        <View>
           <Animated.View
             key="stepNumber"
             style={[
@@ -364,13 +364,9 @@ export const CopilotModal = forwardRef<CopilotModalHandle, Props>(
             key="tooltip"
             style={[styles.tooltip, tooltipStyles, tooltipStyle]}
           >
-            <TooltipComponent
-              labels={labels}
-              showSkipButton={showSkipButton}
-              showPreviousButton={showPreviousButton}
-            />
+            <TooltipComponent labels={labels} />
           </Animated.View>
-        </>
+        </View>
       );
     }
   },

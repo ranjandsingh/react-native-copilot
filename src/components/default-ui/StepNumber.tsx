@@ -1,12 +1,9 @@
 import React, { type FunctionComponent } from "react";
 import { Text, View } from "react-native";
 import { useCopilot } from "../../contexts/CopilotProvider";
+import type { StepNumberProps } from "../../types";
 
 import { styles } from "../style";
-
-export interface StepNumberProps {
-  showStepNumbers?: "current" | "current_of_total";
-}
 
 export const StepNumber: FunctionComponent<StepNumberProps> = ({
   showStepNumbers = "current_of_total",

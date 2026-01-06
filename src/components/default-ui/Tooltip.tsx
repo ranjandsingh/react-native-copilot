@@ -8,13 +8,17 @@ import { styles } from "../style";
 import type { TooltipProps } from "../../types";
 import { useCopilot } from "../../contexts/CopilotProvider";
 
-export const Tooltip = ({
-  labels,
-  showSkipButton = true,
-  showPreviousButton = true,
-}: TooltipProps) => {
-  const { goToNext, goToPrev, stop, currentStep, isFirstStep, isLastStep } =
-    useCopilot();
+export const Tooltip = ({ labels }: TooltipProps) => {
+  const {
+    goToNext,
+    goToPrev,
+    stop,
+    currentStep,
+    isFirstStep,
+    isLastStep,
+    showSkipButton,
+    showPreviousButton,
+  } = useCopilot();
 
   const handleStop = () => {
     void stop();

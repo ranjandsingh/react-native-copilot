@@ -44,8 +44,10 @@ export type Labels = Partial<
 
 export interface TooltipProps {
   labels: Labels;
-  showSkipButton?: boolean;
-  showPreviousButton?: boolean;
+}
+
+export interface StepNumberProps {
+  showStepNumbers?: "current" | "current_of_total";
 }
 
 export interface MaskProps {
@@ -71,7 +73,7 @@ export interface CopilotOptions {
   animationDuration?: number;
   tooltipComponent?: React.ComponentType<TooltipProps>;
   tooltipStyle?: ViewStyle;
-  stepNumberComponent?: React.ComponentType<any>;
+  stepNumberComponent?: React.ComponentType<StepNumberProps>;
   animated?: boolean;
   labels?: Labels;
   androidStatusBarVisible?: boolean;

@@ -44,6 +44,8 @@ interface CopilotContextType {
   isLastStep: boolean;
   currentStepNumber: number;
   totalStepsNumber: number;
+  showSkipButton: boolean;
+  showPreviousButton: boolean;
 }
 
 /*
@@ -57,6 +59,8 @@ const CopilotContext = createContext<CopilotContextType | undefined>(undefined);
 export const CopilotProvider = ({
   verticalOffset = 0,
   beforeStepChange,
+  showSkipButton = true,
+  showPreviousButton = true,
   children,
   ...rest
 }: PropsWithChildren<CopilotOptions>) => {
@@ -233,6 +237,8 @@ export const CopilotProvider = ({
       isLastStep,
       currentStepNumber,
       totalStepsNumber,
+      showSkipButton,
+      showPreviousButton,
     }),
     [
       registerStep,
@@ -249,6 +255,8 @@ export const CopilotProvider = ({
       isLastStep,
       currentStepNumber,
       totalStepsNumber,
+      showSkipButton,
+      showPreviousButton,
     ],
   );
 
