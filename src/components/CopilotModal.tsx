@@ -344,7 +344,7 @@ export const CopilotModal = forwardRef<CopilotModalHandle, Props>(
         return null;
       }
       return (
-        <View>
+        <>
           <Animated.View
             key="stepNumber"
             style={[
@@ -366,7 +366,7 @@ export const CopilotModal = forwardRef<CopilotModalHandle, Props>(
           >
             <TooltipComponent labels={labels} />
           </Animated.View>
-        </View>
+        </>
       );
     }
   },

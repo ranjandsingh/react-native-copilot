@@ -402,6 +402,7 @@ const MyComponent = () => {
       undefined, // fromStep
       scrollViewRef.current, // scrollView ref
       handleBeforeStepChange, // beforeStepChange callback
+      undefined, // toStep (optional stop step)
     );
   };
 
@@ -415,6 +416,59 @@ const MyComponent = () => {
 
 The callback provided to `start()` will override the one provided to `CopilotProvider` for that specific tutorial session.
 
+### Partial tours with start and stop steps
+
+You can run partial tours by specifying both a starting step and a stopping step. This is useful when you have multiple small feature tours within your app.
+
+Both `fromStep` and `toStep` can be specified as either:
+- **Step name** (string): The unique name of the step
+- **Step order** (number): The order number of the step (1-indexed)
+
+```js
+const MyComponent = () => {
+  const { start } = useCopilot();
+
+  // Using step names
+  const startFeatureTour1 = () => {
+    start("step1", null, undefined, "step3");
+  };
+
+  // Using step order numbers (1-indexed)
+  const startFeatureTour2 = () => {
+    start(4, null, undefined, 6); // Start at step 4, stop at step 6
+  };
+
+  // Mix and match names and numbers
+  const startFeatureTour3 = () => {
+    start("intro", null, undefined, 3); // Start at "intro" step, stop at step 3
+  };
+
+  return (
+    <View>
+      <Button onPress={startFeatureTour1} title="Feature Tour 1" />
+      <Button onPress={startFeatureTour2} title="Feature Tour 2" />
+      <Button onPress={startFeatureTour3} title="Feature Tour 3" />
+    </View>
+  );
+};
+```
+
+The `start()` function signature is:
+
+```ts
+start(
+  fromStep?: string | number,  // Step name or order to start from (undefined = first step)
+  scrollView?: ScrollView,     // ScrollView reference for auto-scrolling
+  beforeStepChange?: Function, // Callback before each step change
+  toStep?: string | number,    // Step name or order to stop at (undefined = last step)
+)
+```
+
+When a `toStep` is provided:
+- The tour will automatically stop (show "Finish" button) when reaching that step
+- The `isLastStep` will be `true` when the current step matches the stop step
+- This allows you to create multiple independent mini-tours within your app
+
 ### Triggering the tutorial
 
 Use `const {start} = useCopilot()` to trigger the tutorial. You can either invoke it with a touch event or in `useEffect` to start after the comopnent mounts. Note that the component and all its descendants must be mounted before starting the tutorial since the `CopilotStep`s need to be registered first.
@@ -424,8 +478,8 @@ Use `const {start} = useCopilot()` to trigger the tutorial. You can either invok
 Pass the ScrollView reference as the second argument to the `start()` function.
 eg `start(undefined, scrollViewRef)`
 
-You can also pass a `beforeStepChange` callback as the third argument:
-eg `start(undefined, scrollViewRef, beforeStepChangeCallback)`
+You can also pass a `beforeStepChange` callback as the third argument, and optionally a `toStep` as the fourth:
+eg `start(undefined, scrollViewRef, beforeStepChangeCallback, toStep)`
 
 ```js
 import { ScrollView } from "react-native";

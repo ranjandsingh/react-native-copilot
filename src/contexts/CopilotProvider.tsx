@@ -30,9 +30,10 @@ interface CopilotContextType {
   unregisterStep: (stepName: string) => void;
   currentStep: Step | undefined;
   start: (
-    fromStep?: string,
+    fromStep?: string | number,
     suppliedScrollView?: ScrollView | null,
     suppliedBeforeStepChange?: (step: Step | undefined) => void | Promise<void>,
+    toStep?: string | number,
   ) => Promise<void>;
   stop: () => Promise<void>;
   goToNext: () => Promise<void>;
@@ -70,6 +71,7 @@ export const CopilotProvider = ({
 
   const [visible, setVisibility] = useStateWithAwait(false);
   const [scrollView, setScrollView] = useState<ScrollView | null>(null);
+  const [stopAtStep, setStopAtStep] = useState<string | undefined>(undefined);
   const [beforeStepChangeCallback, setBeforeStepChangeCallback] = useState<
     ((step: Step | undefined) => void | Promise<void>) | undefined
   >(beforeStepChange);
@@ -140,11 +142,12 @@ export const CopilotProvider = ({
 
   const start = useCallback(
     async (
-      fromStep?: string,
+      fromStep?: string | number,
       suppliedScrollView: ScrollView | null = null,
       suppliedBeforeStepChange?: (
         step: Step | undefined,
       ) => void | Promise<void>,
+      toStep?: string | number,
     ) => {
       if (scrollView == null) {
         setScrollView(suppliedScrollView);
@@ -154,25 +157,45 @@ export const CopilotProvider = ({
         setBeforeStepChangeCallback(() => suppliedBeforeStepChange);
       }
 
-      const currentStep = fromStep ? steps[fromStep] : getFirstStep();
+      // Resolve fromStep - can be step name (string) or step order (number)
+      let startStep: Step | undefined;
+      if (fromStep == null) {
+        startStep = getFirstStep();
+      } else if (typeof fromStep === "number") {
+        startStep = getNthStep(fromStep);
+      } else {
+        startStep = steps[fromStep];
+      }
+
+      // Resolve toStep - can be step name (string) or step order (number)
+      let stopStepName: string | undefined;
+      if (toStep != null) {
+        if (typeof toStep === "number") {
+          const resolvedStopStep = getNthStep(toStep);
+          stopStepName = resolvedStopStep?.name;
+        } else {
+          stopStepName = toStep;
+        }
+      }
+      setStopAtStep(stopStepName);
 
       if (startTries.current > MAX_START_TRIES) {
         startTries.current = 0;
         return;
       }
 
-      if (currentStep == null) {
+      if (startStep == null) {
         startTries.current += 1;
         requestAnimationFrame(() => {
-          void start(fromStep, suppliedScrollView, suppliedBeforeStepChange);
+          void start(fromStep, suppliedScrollView, suppliedBeforeStepChange, toStep);
         });
       } else {
         copilotEvents.emit("start");
         if (beforeStepChangeCallback) {
-          await beforeStepChangeCallback(currentStep);
+          await beforeStepChangeCallback(startStep);
         }
-        await setCurrentStep(currentStep);
-        await moveModalToStep(currentStep);
+        await setCurrentStep(startStep);
+        await moveModalToStep(startStep);
         await setVisibility(true);
         startTries.current = 0;
       }
@@ -180,6 +203,7 @@ export const CopilotProvider = ({
     [
       copilotEvents,
       getFirstStep,
+      getNthStep,
       moveModalToStep,
       scrollView,
       setCurrentStep,
@@ -191,6 +215,7 @@ export const CopilotProvider = ({
 
   const stop = useCallback(async () => {
     await setVisibility(false);
+    setStopAtStep(undefined);
     copilotEvents.emit("stop");
   }, [copilotEvents, setVisibility]);
 
@@ -221,6 +246,14 @@ export const CopilotProvider = ({
     await setCurrentStep(prevStep);
   }, [getPrevStep, setCurrentStep, beforeStepChangeCallback]);
 
+  // Compute isLastStep considering stopAtStep
+  const computedIsLastStep = useMemo(() => {
+    if (stopAtStep && currentStep) {
+      return currentStep.name === stopAtStep;
+    }
+    return isLastStep;
+  }, [stopAtStep, currentStep, isLastStep]);
+
   const value = useMemo(
     () => ({
       registerStep,
@@ -234,7 +267,7 @@ export const CopilotProvider = ({
       goToNth: nth,
       goToPrev: prev,
       isFirstStep,
-      isLastStep,
+      isLastStep: computedIsLastStep,
       currentStepNumber,
       totalStepsNumber,
       showSkipButton,
@@ -252,7 +285,7 @@ export const CopilotProvider = ({
       nth,
       prev,
       isFirstStep,
-      isLastStep,
+      computedIsLastStep,
       currentStepNumber,
       totalStepsNumber,
       showSkipButton,
